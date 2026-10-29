@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pathfinding Visualizer</title>
+  <meta name="description" content="Interactive visualizer for A*, Dijkstra, BFS, DFS and Greedy Best-First search on a grid. Draw walls, add weights, generate mazes and compare algorithms.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3' fill='%2310b981'/><path d='M3 12h4V4h6' stroke='white' stroke-width='2' fill='none'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="5"/><path d="M6 18h6V6h6"/></svg>
+      <div>
+        <h1>Pathfinding Visualizer</h1>
+        <p>Watch search algorithms find their way through a grid.</p>
+      </div>
+    </div>
+    <button class="btn ghost" id="helpBtn" aria-haspopup="dialog">How to use</button>
+  </header>
+
+  <section class="controls" aria-label="Controls">
+    <div class="field">
+      <label for="algoSelect">Algorithm</label>
+      <select id="algoSelect">
+        <option value="astar">A* Search</option>
+        <option value="dijkstra">Dijkstra's Algorithm</option>
+        <option value="bfs">Breadth-First Search</option>
+        <option value="greedy">Greedy Best-First</option>
+        <option value="dfs">Depth-First Search</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="mazeSelect">Generate</label>
+      <select id="mazeSelect">
+        <option value="">Choose a pattern…</option>
+        <option value="division">Maze (recursive division)</option>
+        <option value="random">Random walls</option>
+        <option value="weights">Random weights</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <span class="label" id="toolLabel">Draw</span>
+      <div class="segmented" role="radiogroup" aria-labelledby="toolLabel">
+        <button role="radio" aria-checked="true" data-tool="wall">Wall</button>
+        <button role="radio" aria-checked="false" data-tool="weight">Weight</button>
+        <button role="radio" aria-checked="false" data-tool="erase">Erase</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="speed">Speed</label>
+      <input type="range" id="speed" min="1" max="5" value="3">
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="runBtn">Visualize</button>
+      <button class="btn" id="compareBtn">Compare all</button>
+      <button class="btn" id="clearPathBtn">Clear path</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+  </section>
+
+  <section class="info">
+    <div class="algo-info">
+      <h2 id="algoName">A* Search</h2>
+      <div class="badges" id="algoBadges"></div>
+      <p id="algoBlurb"></p>
+    </div>
+    <dl class="stats" aria-live="polite">
+      <div><dt>Cells explored</dt><dd id="statVisited">–</dd></div>
+      <div><dt>Path length</dt><dd id="statLength">–</dd></div>
+      <div><dt>Path cost</dt><dd id="statCost">–</dd></div>
+      <div><dt>Compute time</dt><dd id="statTime">–</dd></div>
+    </dl>
+  </section>
+
+  <ul class="legend" aria-label="Legend">
+    <li><span class="swatch start"></span>Start</li>
+    <li><span class="swatch end"></span>Target</li>
+    <li><span class="swatch wall"></span>Wall</li>
+    <li><span class="swatch weight"></span>Weight (cost 5)</li>
+    <li><span class="swatch visited"></span>Explored</li>
+    <li><span class="swatch path"></span>Shortest path</li>
+  </ul>
+
+  <main>
+    <div class="grid" id="grid" role="application" aria-label="Pathfinding grid. Drag to draw walls; drag the start or target to move them."></div>
+    <p class="toast" id="toast" role="status"></p>
+  </main>
+
+  <section class="compare" id="comparePanel" hidden>
+    <div class="compare-head">
+      <h2>Algorithm comparison</h2>
+      <p>Same grid, every algorithm. Lower is better.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Algorithm</th><th>Cells explored</th><th>Path length</th><th>Path cost</th><th>Shortest?</th><th>Time</th></tr>
+        </thead>
+        <tbody id="compareBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <dialog id="helpDialog">
+    <h2>How to use</h2>
+    <ol>
+      <li><strong>Draw walls</strong> by clicking or dragging across the grid. Switch to <em>Weight</em> to paint heavy cells that cost 5 to cross.</li>
+      <li><strong>Move the start or target</strong> by dragging them. After a run, moving them updates the path instantly.</li>
+      <li><strong>Pick an algorithm</strong> and press <em>Visualize</em> to watch it explore.</li>
+      <li><strong>Compare all</strong> runs every algorithm on the same grid and ranks them.</li>
+    </ol>
+    <p class="hint">Keyboard: <kbd>Space</kbd> visualize · <kbd>C</kbd> clear path · <kbd>R</kbd> reset · <kbd>1</kbd>–<kbd>3</kbd> switch draw tool</p>
+    <form method="dialog"><button class="btn primary">Got it</button></form>
+  </dialog>
+
+  <footer>
+    Built with plain HTML, CSS and JavaScript. No frameworks, no build step.
+  </footer>
+
+  <script src="js/algorithms.js"></script>
+  <script src="js/maze.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "pathfinding-visualizer",
+  "version": "1.0.0",
+  "description": "Interactive visualizer for A*, Dijkstra, BFS, DFS and Greedy Best-First search",
+  "scripts": {
+    "start": "npx --yes serve .",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["pathfinding", "a-star", "dijkstra", "bfs", "dfs", "algorithms", "visualizer"],
+  "license": "MIT"
+}
